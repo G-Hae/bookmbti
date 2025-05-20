@@ -1,4 +1,5 @@
 import { MantineProvider } from '@mantine/core';
+import './globals.css';
 
 export default function RootLayout({
     children,
