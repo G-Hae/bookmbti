@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 export default function ResultPage() {
     const router = useRouter();
-    const { userPersonalityType, resetTest } = useBookStore();
+    const { resetTest, userPersonalityType } = useBookStore();
 
     const containerStyle = {
         minHeight: '80vh',
