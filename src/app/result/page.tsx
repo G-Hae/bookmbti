@@ -1,12 +1,35 @@
 'use client';
 
-import { Button, Container, Text, Title } from '@mantine/core';
-import { useRouter, useSearchParams } from 'next/navigation';
+import useBookStore from '@/store/bookStore';
+import { Button, Container, Space, Text, Title } from '@mantine/core';
+import { useRouter } from 'next/navigation';
 
 export default function ResultPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const result = searchParams.get('type') || '결과 없음';
+    const { userPersonalityType, resetTest } = useBookStore();
+
+    const containerStyle = {
+        minHeight: '80vh',
+        backgroundColor: 'white',
+        padding: '40px 30px',
+        borderRadius: '16px',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+        maxWidth: 480,
+        width: '100%',
+        boxSizing: 'border-box' as const,
+        display: 'flex',
+        flexDirection: 'column' as const,
+        alignItems: 'center',
+    };
+
+    const pageWrapperStyle = {
+        width: '100%',
+        minHeight: '100vh',
+        display: 'flex',
+        justifyContent: 'center' as const,
+        alignItems: 'center' as const,
+        background: 'linear-gradient(135deg, #f8f9fa 0%, #dee2e6 100%)',
+    };
 
     const typeDescriptions: Record<string, { category: string; description: string }> = {
         ISTJ: { category: '자기계발서, 역사', description: '체계적이고 책임감 강한 유형, 전통적 가치 중시' },
@@ -27,22 +50,44 @@ export default function ResultPage() {
         ENTJ: { category: '전략서, 리더십', description: '강한 리더십과 목표 지향적, 전략적 사고 중시' },
     };
 
-    const goHome = () => {
+    const handleRetryTest = () => {
+        resetTest();
         router.push('/');
     };
 
+    if (!userPersonalityType || !typeDescriptions[userPersonalityType]) {
+        return (
+            <div style={pageWrapperStyle}>
+                <Container style={{ ...containerStyle, justifyContent: 'center' as const }}>
+                    <Title order={2} my="md" ta="center">
+                        테스트 결과가 없습니다.
+                    </Title>
+                    <Text mb="lg" ta="center">
+                        다시 테스트를 진행해 주세요!
+                    </Text>
+                    <Space h="50px" />
+                    <Button onClick={handleRetryTest} size="lg">
+                        테스트 다시 시작하기
+                    </Button>
+                </Container>
+            </div>
+        );
+    }
+
     return (
-        <Container>
-            <Title order={2} my="md">
-                당신은 이런 책입니다!
-            </Title>
-            <Text mb="md" fw="semibold">
-                분류: {typeDescriptions[result]?.category || '정보 없음'}
-            </Text>
-            <Text mb="lg" style={{ whiteSpace: 'pre-line' }}>
-                설명: {typeDescriptions[result]?.description || '설명 없음'}
-            </Text>
-            <Button onClick={goHome}>홈으로 돌아가기</Button>
-        </Container>
+        <div style={pageWrapperStyle}>
+            <Container style={containerStyle}>
+                <Title order={2} my="md" ta="center">
+                    당신은 {typeDescriptions[userPersonalityType]?.category}입니다!
+                </Title>
+                <Text mb="lg" style={{ whiteSpace: 'pre-line' }} ta="center">
+                    {typeDescriptions[userPersonalityType]?.description || '설명 없음'}
+                </Text>
+                <Space h="50px" />
+                <Button onClick={handleRetryTest} size="lg">
+                    테스트 다시 시작하기
+                </Button>
+            </Container>
+        </div>
     );
 }
