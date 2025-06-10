@@ -45,7 +45,7 @@ export default function Home() {
                         marginBottom: '1rem',
                     }}
                 >
-                    나는 어떤 책일까?
+                    BookBTI
                 </Title>
                 <img
                     src="https://cdn-icons-png.flaticon.com/512/29/29302.png"
@@ -60,6 +60,8 @@ export default function Home() {
                         lineHeight: 1.6,
                     }}
                 >
+                    나는 어떤 책일까? <br />
+                    <br />
                     나를 책으로 표현한다면 어떤 장르의 책일까요?
                     <br />몇 가지 질문으로 나의 책 유형을 알아보세요!
                 </Text>

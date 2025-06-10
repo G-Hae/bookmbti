@@ -1,5 +1,6 @@
 'use client';
 
+import useBookStore from '@/store/bookStore';
 import { Button, Container, Paper, Text, Title } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -12,6 +13,7 @@ const questions = [
             { id: 'q1o1', text: '아침', type: 'E', score: 2 },
             { id: 'q1o2', text: '저녁', type: 'I', score: 2 },
         ],
+        imgUrl: 'https://cdn.pixabay.com/photo/2023/03/17/14/26/bear-7858736_1280.jpg',
     },
     {
         id: 2,
@@ -20,6 +22,7 @@ const questions = [
             { id: 'q2o1', text: '재미', type: 'S', score: 2 },
             { id: 'q2o2', text: '정보', type: 'N', score: 2 },
         ],
+        imgUrl: 'https://cdn.pixabay.com/photo/2023/03/17/14/26/bear-7858736_1280.jpg',
     },
     {
         id: 3,
@@ -28,6 +31,7 @@ const questions = [
             { id: 'q3o1', text: '독서', type: 'T', score: 2 },
             { id: 'q3o2', text: '산책', type: 'F', score: 2 },
         ],
+        imgUrl: 'https://cdn.pixabay.com/photo/2023/03/17/14/26/bear-7858736_1280.jpg',
     },
     {
         id: 4,
@@ -36,6 +40,7 @@ const questions = [
             { id: 'q4o1', text: '사교적이며 말이 많다', type: 'E', score: 2 },
             { id: 'q4o2', text: '조용히 관찰하는 편이다', type: 'I', score: 2 },
         ],
+        imgUrl: 'https://cdn.pixabay.com/photo/2023/03/17/14/26/bear-7858736_1280.jpg',
     },
     {
         id: 5,
@@ -44,6 +49,7 @@ const questions = [
             { id: 'q5o1', text: '사실에 집중한다', type: 'S', score: 2 },
             { id: 'q5o2', text: '가능성과 의미에 집중한다', type: 'N', score: 2 },
         ],
+        imgUrl: 'https://cdn.pixabay.com/photo/2023/03/17/14/26/bear-7858736_1280.jpg',
     },
     {
         id: 6,
@@ -52,6 +58,7 @@ const questions = [
             { id: 'q6o1', text: '논리적으로 판단한다', type: 'T', score: 2 },
             { id: 'q6o2', text: '감정을 고려한다', type: 'F', score: 2 },
         ],
+        imgUrl: 'https://cdn.pixabay.com/photo/2023/03/17/14/26/bear-7858736_1280.jpg',
     },
     {
         id: 7,
@@ -60,6 +67,7 @@ const questions = [
             { id: 'q7o1', text: '계획적으로 움직인다', type: 'J', score: 2 },
             { id: 'q7o2', text: '즉흥적으로 행동한다', type: 'P', score: 2 },
         ],
+        imgUrl: 'https://cdn.pixabay.com/photo/2023/03/17/14/26/bear-7858736_1280.jpg',
     },
     {
         id: 8,
@@ -68,6 +76,7 @@ const questions = [
             { id: 'q8o1', text: '직설적이고 명확하다', type: 'J', score: 2 },
             { id: 'q8o2', text: '느긋하고 유연하다', type: 'P', score: 2 },
         ],
+        imgUrl: 'https://cdn.pixabay.com/photo/2023/03/17/14/26/bear-7858736_1280.jpg',
     },
     {
         id: 9,
@@ -76,6 +85,7 @@ const questions = [
             { id: 'q9o1', text: '혼자만의 시간이 필요하다', type: 'I', score: 2 },
             { id: 'q9o2', text: '친구들과 이야기하며 푼다', type: 'E', score: 2 },
         ],
+        imgUrl: 'https://cdn.pixabay.com/photo/2023/03/17/14/26/bear-7858736_1280.jpg',
     },
     {
         id: 10,
@@ -84,11 +94,15 @@ const questions = [
             { id: 'q10o1', text: '체계적으로 순서대로 한다', type: 'J', score: 2 },
             { id: 'q10o2', text: '다양한 일들을 동시에 한다', type: 'P', score: 2 },
         ],
+        imgUrl: 'https://cdn.pixabay.com/photo/2023/03/17/14/26/bear-7858736_1280.jpg',
     },
 ];
 
 export default function QuizPage() {
     const router = useRouter();
+    const store = useBookStore();
+
+    const { userPersonalityType, setUserPersonalityType } = useBookStore();
 
     const [current, setCurrent] = useState(0);
     const [answers, setAnswers] = useState<{ type: string; score: number }[]>([]);
@@ -107,18 +121,16 @@ export default function QuizPage() {
             (scores['J'] || 0) >= (scores['P'] || 0) ? 'J' : 'P',
         ].join('');
 
-        return result;
+        setUserPersonalityType(result);
     };
 
-    const resultType = calculateResult(answers);
-
     const handleAnswer = (answer: { type: string; score: number }) => {
-        setAnswers((prev) => [...prev, answer]);
         if (current + 1 < questions.length) {
             setCurrent((prev) => prev + 1);
+            setAnswers((prev) => [...prev, answer]);
         } else {
-            const result = calculateResult([...answers, answer]);
-            router.push(`/result?type=${result}`);
+            calculateResult([...answers, answer]);
+            router.push(`/result`);
         }
     };
 
@@ -160,6 +172,9 @@ export default function QuizPage() {
                     style={{
                         backgroundColor: 'white',
                         textAlign: 'center',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
                     }}
                 >
                     <Title order={2} mb="sm">
@@ -168,22 +183,35 @@ export default function QuizPage() {
                     <Text size="lg" mb="xl">
                         {q.question}
                     </Text>
-
-                    {q.options.map((opt) => (
-                        <Button
-                            key={opt.id}
-                            fullWidth
-                            size="md"
-                            variant="light"
-                            color="indigo"
-                            radius="md"
-                            my="sm"
-                            onClick={() => handleAnswer(opt)}
-                            style={{ fontWeight: 500 }}
-                        >
-                            {opt.text}
-                        </Button>
-                    ))}
+                    <img
+                        src={q.imgUrl}
+                        alt="quiz image"
+                        style={{
+                            width: '100%',
+                            maxWidth: '300px',
+                            maxHeight: '300px',
+                            height: 'auto',
+                            borderRadius: '12px',
+                            marginBottom: '1.5rem',
+                        }}
+                    />
+                    <div>
+                        {q.options.map((opt) => (
+                            <Button
+                                key={opt.id}
+                                fullWidth
+                                size="md"
+                                variant="light"
+                                color="indigo"
+                                radius="md"
+                                my="sm"
+                                onClick={() => handleAnswer(opt)}
+                                style={{ fontWeight: 500 }}
+                            >
+                                {opt.text}
+                            </Button>
+                        ))}{' '}
+                    </div>
                 </Paper>
             </Container>
         </div>
