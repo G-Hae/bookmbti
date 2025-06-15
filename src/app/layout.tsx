@@ -1,5 +1,6 @@
 import { MantineProvider } from '@mantine/core';
 import './globals.css';
+import QueryProvider from './QueryProvider';
 
 export default function RootLayout({
     children,
@@ -9,7 +10,9 @@ export default function RootLayout({
     return (
         <html lang="ko">
             <body>
-                <MantineProvider>{children}</MantineProvider>
+                <QueryProvider>
+                    <MantineProvider>{children}</MantineProvider>
+                </QueryProvider>
             </body>
         </html>
     );
